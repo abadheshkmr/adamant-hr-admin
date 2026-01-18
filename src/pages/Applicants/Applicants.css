@@ -1,0 +1,135 @@
+.filter-section {
+  margin: 20px 0px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-section label {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.filter-section select {
+  padding: 6px 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.filter-section select:focus {
+  border-color: #6c63ff;
+  outline: none;
+}
+
+.applicants-page {
+  padding: 60px 20px;
+  background: #f9fafb;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  padding-top: 30px;
+}
+
+.applicant-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 2rem;
+}
+
+.applicant-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 30%;
+  min-width: 280px;
+  text-align: left;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.applicant-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.applicant-info {
+  padding: 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.applicant-info h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+.applicant-info p {
+  margin: 4px 0;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.applicant-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding: 0 18px 18px 18px;
+}
+
+.view-btn {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  padding: 8px 0;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  flex: 1;
+  text-align: center;
+  margin-right: 8px;
+}
+
+.view-btn:hover {
+  background-color: #bae6fd;
+}
+
+.delete-btn {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  padding: 8px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  flex: 1;
+  text-align: center;
+}
+
+.delete-btn:hover {
+  background-color: #fecaca;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  color: #6c63ff;
+}
+
+
+@media (max-width:600px) {
+  .applicant-list{
+    justify-content: center;
+  }
+  .applicant-card{
+    width: 90%;
+  }
+}

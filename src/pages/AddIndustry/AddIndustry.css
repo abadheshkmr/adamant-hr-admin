@@ -1,0 +1,102 @@
+.add{
+    width: 82%;
+    /* margin-left: 18%; */
+    margin-top: 50px;
+    color: #6d6d6d;
+    font-size: 16px;
+    
+}
+
+.add form{
+    gap: 20px;
+}
+
+.add-img-upload-img{
+    width: 120px;
+    box-sizing: border-box;
+}
+
+img{
+    width: 120px;
+}
+
+.add-product-name , .add-product-description{
+    width: max(40% , 280px);
+}
+
+.add-product-name input , .add-product-description textarea{
+    padding: 10px;
+}
+
+.add-category-price{
+    display: flex;
+    gap: 30px;
+}
+
+.add-category-price select, .add-category-price input{
+    max-width: 120px;
+    padding: 10px;
+}
+
+.add-btn{
+    max-width: 120px;
+    border: none;
+    padding: 10px;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+
+/* ===== Job Roles Section ===== */
+.roles-box {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.roles-input {
+    display: flex;
+    gap: 10px;
+}
+
+.roles-input input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.add-role-btn {
+    padding: 8px 14px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.roles-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.role-item {
+    background: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.remove-role-btn {
+    background: transparent;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}

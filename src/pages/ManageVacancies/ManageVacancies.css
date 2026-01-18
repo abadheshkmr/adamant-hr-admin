@@ -1,0 +1,87 @@
+.vacancies-section {
+  /* margin-left: 50px;
+  margin-top: 50px;
+  width: 70%;
+  font-size: 16px; */
+
+  padding: 60px 20px;
+  background: #f9fafb;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  padding-top: 30px;
+
+}
+
+.vacancies-title {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.vacancies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.vacancy-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: justify;
+}
+
+.vacancy-content h3 {
+  margin: 0 0 10px 0;
+  color: #006AB0;
+}
+
+.vacancy-content .dateofpost {
+    text-align: right;
+    color: #515c65;
+}
+
+.vacancy-description,
+.vacancy-qualification {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: #e81123;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 5px;
+}
+
+/* .vacancy-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+} */
+
+.action-btn {
+  padding: 8px 25px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.delete-btn {
+  background-color: #e81123;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c50e1f;
+}
+
+.scrollable-div {
+  /* max-height: 80vh; */
+  overflow-y: auto;
+}

@@ -1,0 +1,146 @@
+.industries-section {
+  padding: 60px 20px;
+  background: #f9fafb;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+}
+
+.industries-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #334155;
+}
+
+.industries-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: stretch; /* ✅ all cards same height in a row */
+  gap: 20px;
+}
+
+.industry-card {
+  display: flex;                 /* ✅ flex column layout */
+  flex-direction: column;
+  justify-content: space-between; /* space between image/content/actions */
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 280px;
+  text-align: left;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.industry-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.industry-image img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.industry-content {
+  flex: 1;                        /* ✅ fill remaining height */
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+}
+
+.industry-content h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+.industry-description {
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 12px;
+}
+
+.toggle-btn:hover {
+  text-decoration: underline;
+}
+
+.industry-roles h4 {
+  font-size: 1rem;
+  margin-bottom: 6px;
+  color: #334155;
+}
+
+.industry-roles ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 0 0 10px 0;
+}
+
+.industry-roles li {
+  font-size: 0.9rem;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.industry-actions {
+  margin-top: auto;               /* ✅ push actions to bottom */
+  display: flex;
+  justify-content: space-between;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.view-btn {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  margin-right: 8px;
+}
+
+.view-btn:hover {
+  background-color: #bae6fd;
+}
+
+.delete-btn {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.delete-btn:hover {
+  background-color: #fecaca;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .industry-card {
+    width: 45%;
+  }
+}
+
+@media (max-width: 500px) {
+  .industry-card {
+    width: 100%;
+  }
+}

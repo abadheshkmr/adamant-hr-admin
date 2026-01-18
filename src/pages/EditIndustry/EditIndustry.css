@@ -1,0 +1,94 @@
+.edit {
+  width: 70%;
+  margin-left: max(5vw, 25px);
+  margin-top: 50px;
+  color: #6d6d6d;
+  font-size: 16px;
+}
+
+.edit form {
+  gap: 20px;
+}
+
+.edit-img-upload img {
+  width: 120px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.edit-product-name,
+.edit-product-description {
+  width: max(40%, 280px);
+}
+
+.edit-product-name input,
+.edit-product-description textarea {
+  padding: 10px;
+}
+
+.roles-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.roles-input {
+  display: flex;
+  gap: 10px;
+}
+
+.roles-input input {
+  flex: 1;
+  padding: 8px;
+}
+
+.add-role-btn {
+  background: #28a745;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.add-role-btn:hover {
+  background: #218838;
+}
+
+.roles-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.role-item {
+  background: #f1f1f1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.remove-role-btn {
+  background: transparent;
+  border: none;
+  color: red;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  max-width: 120px;
+  border: none;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.edit-btn:hover {
+  background-color: #0056b3;
+}
