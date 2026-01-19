@@ -24,7 +24,7 @@ const PostVacancy = ({url}) => {
 
     const response = await axios.post(`${url}/api/vacancy/add` , data, {
       headers: {
-        'Authtoken': auth.token
+        'Authorization': `Bearer ${auth.token}`
       }
     });
     if(response.data.success){

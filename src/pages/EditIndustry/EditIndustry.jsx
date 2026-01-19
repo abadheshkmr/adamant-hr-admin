@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "./EditIndustry.css";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
+import { AuthContext } from '../../context/AuthContext';
 
 const EditIndustry = ({ url }) => {
+  const { auth } = useContext(AuthContext);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -80,7 +82,11 @@ const EditIndustry = ({ url }) => {
     }
 
     try {
-      const res = await axios.put(`${url}/api/industry/update`, formData);
+      const res = await axios.put(`${url}/api/industry/update`, formData, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      });
       if (res.data.success) {
         toast.success("Industry updated successfully!");
         navigate("/list-industries");

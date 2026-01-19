@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "./EditService.css";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
+import { AuthContext } from '../../context/AuthContext';
 
 const EditService = ({ url }) => {
+  const { auth } = useContext(AuthContext);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -58,7 +60,11 @@ const EditService = ({ url }) => {
     formData.append("id", id); // include ID for update
 
     try {
-      const response = await axios.put(`${url}/api/service/update`, formData);
+      const response = await axios.put(`${url}/api/service/update`, formData, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      });
       if (response.data.success) {
         toast.success("Service updated successfully!");
         navigate("/list-services"); // redirect after update

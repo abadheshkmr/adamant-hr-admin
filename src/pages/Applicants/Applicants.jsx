@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import "./Applicants.css";
-
 import { toast } from "react-toastify";
+import { AuthContext } from '../../context/AuthContext';
 
 const Applicants = ({ url }) => {
+  const { auth } = useContext(AuthContext);
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
@@ -14,7 +15,11 @@ const Applicants = ({ url }) => {
   // Fetch all vacancies
   const fetchVacancies = async () => {
     try {
-      const res = await axios.get(`${url}/api/vacancy/list`);
+      const res = await axios.get(`${url}/api/vacancy/list`, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      });
       if (res.data.success) {
         setVacancies(res.data.data || []);
         const map = {};
@@ -37,7 +42,11 @@ const Applicants = ({ url }) => {
     try {
       
       const query = jobIdFilter ? `?jobId=${jobIdFilter}` : "";
-      const res = await axios.get(`${url}/api/cv/list${query}`);
+      const res = await axios.get(`${url}/api/cv/list${query}`, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      });
       if (res.data.success) {
         setApplicants(res.data.data || []);
       } else {
@@ -58,7 +67,11 @@ const Applicants = ({ url }) => {
     if (!confirmDelete) return;
 
     try {
-      const res = await axios.post(`${url}/api/cv/remove`, { id });
+      const res = await axios.post(`${url}/api/cv/remove`, { id }, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      });
       if (res.data.success) {
         toast.success("Applicant removed successfully ✅");
         fetchApplicants(filter); // Refresh list with current filter
