@@ -11,6 +11,7 @@ import ListIndustries from './pages/ListIndustries/ListIndustries';
 import ListService from './pages/ListServices/ListServices';
 import EditService from './pages/EditService/EditService';
 import EditIndustry from './pages/EditIndustry/EditIndustry';
+import EditVacancy from './pages/EditVacancy/EditVacancy';
 import Applicants from './pages/Applicants/Applicants';
 import PostVacancy from './pages/PostVacancy/PostVacancy';
 import ManageVacancies from './pages/ManageVacancies/ManageVacancies';
@@ -35,6 +36,7 @@ function AppRoutes() {
       <Route path='/cvs' element = {<Applicants url = {url} />} />
       <Route path='/post-vacancy' element = {<PostVacancy url = {url} />} />
       <Route path='/manage-vacancies' element = {<ManageVacancies url = {url} />} />
+      <Route path='/edit-vacancy/:id' element = {<EditVacancy url = {url} />} />
       {/* <Route path="*" element={<Navigate to="/list-services" replace />} /> */}
     </Routes>
   )
