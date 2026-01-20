@@ -34,6 +34,10 @@ const Sidebar = () => {
           <img src='images/list_icon.png' alt="" />
           <p>Manage Vacancies</p>
         </NavLink>
+        <NavLink to={'/manage-clients'} className="sidebar-option">
+          <img src='images/list_icon.png' alt="" />
+          <p>Manage Clients</p>
+        </NavLink>
       </div>
     </div>
   )

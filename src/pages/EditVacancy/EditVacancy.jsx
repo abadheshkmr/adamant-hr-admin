@@ -10,28 +10,13 @@ const EditVacancy = ({url}) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [industries, setIndustries] = useState([]);
+  const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const industriesFetched = useRef(false);
+  const clientsFetched = useRef(false);
 
-  const [data, setData] = useState({
-    jobTitle: "",
-    description: "",
-    qualification: "",
-    industry: "",
-    skills: [],
-    city: "",
-    state: "",
-    country: "India",
-    isRemote: false,
-    employmentType: "Full-time",
-    experienceLevel: "Fresher",
-    salaryMin: "",
-    salaryMax: "",
-    isNegotiable: false,
-    applicationDeadline: "",
-    numberOfOpenings: 1,
-    status: "active"
-  });
+  const [data, setData] = useState(null); // Start with null to indicate not loaded yet
+  const [originalData, setOriginalData] = useState(null); // Store original data from DB
 
   const [skillInput, setSkillInput] = useState("");
 
@@ -76,32 +61,112 @@ const EditVacancy = ({url}) => {
     };
   }, [url]); // Only depend on url
 
+  // Fetch clients - only once when component mounts
+  useEffect(() => {
+    // Skip if already fetched
+    if (clientsFetched.current) return;
+
+    let isMounted = true;
+    const abortController = new AbortController();
+
+    const fetchClients = async () => {
+      try {
+        const response = await axios.get(`${url}/api/client/list`, {
+          headers: {
+            'Authorization': `Bearer ${auth.token}`
+          },
+          signal: abortController.signal
+        });
+        if (response.data.success && isMounted) {
+          // Filter only active clients
+          const activeClients = response.data.data.filter(client => client.isActive !== false);
+          setClients(activeClients);
+          clientsFetched.current = true;
+        }
+      } catch (error) {
+        if (axios.isCancel(error) || error.name === 'AbortError') {
+          // Request was cancelled, ignore
+          return;
+        }
+        if (isMounted) {
+          console.error("Error fetching clients:", error);
+          // Only show error if it's not a rate limit (429)
+          if (error.response?.status !== 429) {
+            toast.error("Failed to load clients");
+          }
+        }
+      }
+    };
+    
+    fetchClients();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, [url, auth.token]); // Depend on url and auth.token
+
   // Fetch existing vacancy data
   useEffect(() => {
     const fetchVacancy = async () => {
       try {
-        const response = await axios.get(`${url}/api/vacancy/get/${id}`);
+        // Use admin endpoint to get full details including client
+        const response = await axios.get(`${url}/api/vacancy/get/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${auth.token}`
+          }
+        });
         if (response.data.success) {
           const vacancy = response.data.data;
+          console.log("Fetched vacancy data:", vacancy); // Debug log
+          
+          // Store original data for reference
+          const originalVacancyData = {
+            jobTitle: vacancy.jobTitle,
+            description: vacancy.description,
+            qualification: vacancy.qualification,
+            industry: vacancy.industry?._id || vacancy.industry,
+            client: vacancy.client?._id || vacancy.client,
+            showClientToCandidate: vacancy.showClientToCandidate,
+            skills: vacancy.skills,
+            city: vacancy.location?.city,
+            state: vacancy.location?.state,
+            country: vacancy.location?.country,
+            isRemote: vacancy.location?.isRemote,
+            employmentType: vacancy.employmentType,
+            experienceLevel: vacancy.experienceLevel,
+            salaryMin: vacancy.salary?.min,
+            salaryMax: vacancy.salary?.max,
+            isNegotiable: vacancy.salary?.isNegotiable,
+            applicationDeadline: vacancy.applicationDeadline,
+            numberOfOpenings: vacancy.numberOfOpenings,
+            status: vacancy.status
+          };
+          setOriginalData(originalVacancyData);
+          
+          // Populate form with all data from database - preserve actual values, use defaults only if truly missing
           setData({
             jobTitle: vacancy.jobTitle || "",
             description: vacancy.description || "",
             qualification: vacancy.qualification || "",
             industry: vacancy.industry?._id || vacancy.industry || "",
-            skills: vacancy.skills || [],
-            city: vacancy.location?.city || "",
-            state: vacancy.location?.state || "",
-            country: vacancy.location?.country || "India",
-            isRemote: vacancy.location?.isRemote || false,
+            client: vacancy.client?._id || vacancy.client || "",
+            showClientToCandidate: vacancy.showClientToCandidate !== undefined ? vacancy.showClientToCandidate : false,
+            skills: Array.isArray(vacancy.skills) ? vacancy.skills : [],
+            city: vacancy.location?.city !== undefined ? vacancy.location.city : "",
+            state: vacancy.location?.state !== undefined ? vacancy.location.state : "",
+            country: vacancy.location?.country !== undefined ? vacancy.location.country : "India",
+            isRemote: vacancy.location?.isRemote !== undefined ? vacancy.location.isRemote : false,
             employmentType: vacancy.employmentType || "Full-time",
             experienceLevel: vacancy.experienceLevel || "Fresher",
-            salaryMin: vacancy.salary?.min || "",
-            salaryMax: vacancy.salary?.max || "",
-            isNegotiable: vacancy.salary?.isNegotiable || false,
+            salaryMin: vacancy.salary?.min !== undefined && vacancy.salary.min !== null ? vacancy.salary.min : "",
+            salaryMax: vacancy.salary?.max !== undefined && vacancy.salary.max !== null ? vacancy.salary.max : "",
+            isNegotiable: vacancy.salary?.isNegotiable !== undefined ? vacancy.salary.isNegotiable : false,
             applicationDeadline: vacancy.applicationDeadline 
               ? new Date(vacancy.applicationDeadline).toISOString().split('T')[0]
               : "",
-            numberOfOpenings: vacancy.numberOfOpenings || 1,
+            numberOfOpenings: vacancy.numberOfOpenings !== undefined ? vacancy.numberOfOpenings : 1,
             status: vacancy.status || "active"
           });
         } else {
@@ -116,10 +181,10 @@ const EditVacancy = ({url}) => {
         setLoading(false);
       }
     };
-    if (id) {
+    if (id && auth.token) {
       fetchVacancy();
     }
-  }, [id, url, navigate]);
+  }, [id, url, navigate, auth.token]);
 
   const onChangeHandler = (event) => {
     const name = event.target.name;
@@ -145,29 +210,43 @@ const EditVacancy = ({url}) => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
+    if (!data) {
+      toast.error("Form data not loaded. Please wait...");
+      return;
+    }
+
+    // Build vacancy data - send all current form values to ensure nothing is lost
+    // The backend will only update fields that are provided, so we send everything
     const vacancyData = {
       id: id,
       jobTitle: data.jobTitle,
       description: data.description,
       qualification: data.qualification,
       industry: data.industry || null,
-      skills: data.skills,
+      client: data.client || null,
+      showClientToCandidate: data.showClientToCandidate,
+      skills: Array.isArray(data.skills) ? data.skills : [],
       city: data.city,
       state: data.state,
-      country: data.country,
+      country: data.country || "India",
       isRemote: data.isRemote,
       employmentType: data.employmentType,
       experienceLevel: data.experienceLevel,
       salary: {
-        min: data.salaryMin ? parseInt(data.salaryMin) : undefined,
-        max: data.salaryMax ? parseInt(data.salaryMax) : undefined,
+        min: data.salaryMin && data.salaryMin !== "" ? parseInt(data.salaryMin) : undefined,
+        max: data.salaryMax && data.salaryMax !== "" ? parseInt(data.salaryMax) : undefined,
         currency: 'INR',
         isNegotiable: data.isNegotiable
       },
-      applicationDeadline: data.applicationDeadline || undefined,
-      numberOfOpenings: parseInt(data.numberOfOpenings) || 1,
+      applicationDeadline: data.applicationDeadline && data.applicationDeadline !== "" 
+        ? data.applicationDeadline 
+        : null,
+      numberOfOpenings: data.numberOfOpenings ? parseInt(data.numberOfOpenings) : 1,
       status: data.status
     };
+    
+    console.log("Submitting vacancy data:", vacancyData); // Debug log
+    console.log("Original data from DB:", originalData); // Debug log
 
     try {
       const response = await axios.put(`${url}/api/vacancy/update`, vacancyData, {
@@ -188,7 +267,7 @@ const EditVacancy = ({url}) => {
     }
   };
 
-  if (loading) {
+  if (loading || !data) {
     return <div style={{ padding: '20px', textAlign: 'center' }}>Loading vacancy data...</div>;
   }
 
@@ -225,6 +304,65 @@ const EditVacancy = ({url}) => {
             ))}
           </select>
         </div>
+
+        <div className="edit-product-name flex-col">
+          <p>Client/Company</p>
+          <select 
+            onChange={onChangeHandler} 
+            value={data.client} 
+            name="client"
+          >
+            <option value="">Select Client (Optional)</option>
+            {clients.map(client => (
+              <option key={client._id} value={client._id}>
+                {client.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {data.client && (
+          <div className="edit-product-name flex-col" style={{ 
+            background: '#f9fafb', 
+            padding: '16px', 
+            borderRadius: '8px',
+            border: '1px solid #e5e7eb',
+            marginBottom: '20px'
+          }}>
+            <label style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px', 
+              cursor: 'pointer',
+              fontWeight: '500',
+              fontSize: '15px'
+            }}>
+              <input
+                type="checkbox"
+                checked={data.showClientToCandidate}
+                onChange={onChangeHandler}
+                name="showClientToCandidate"
+                style={{ 
+                  width: '20px', 
+                  height: '20px', 
+                  cursor: 'pointer',
+                  accentColor: '#6366f1'
+                }}
+              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>{data.showClientToCandidate ? '👁️' : '🚫'}</span>
+                  <strong>Show Client Name to Candidates</strong>
+                </span>
+                <span style={{ fontSize: '13px', color: '#6b7280', fontWeight: '400' }}>
+                  {data.showClientToCandidate 
+                    ? 'Candidates will see the client/company name on the job listing'
+                    : 'Client name will be hidden from candidates (only visible to admin)'}
+                </span>
+              </div>
+            </label>
+          </div>
+        )}
 
         <div className="edit-product-name flex-col">
           <p>Description *</p>
