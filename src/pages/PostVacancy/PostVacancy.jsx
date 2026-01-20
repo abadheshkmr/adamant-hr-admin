@@ -7,13 +7,17 @@ import { AuthContext } from '../../context/AuthContext';
 const PostVacancy = ({url}) => {
   const { auth } = useContext(AuthContext);
   const [industries, setIndustries] = useState([]);
+  const [clients, setClients] = useState([]);
   const industriesFetched = useRef(false);
+  const clientsFetched = useRef(false);
 
   const [data, setData] = useState({
     jobTitle: "",
     description: "",
     qualification: "",
     industry: "",
+    client: "",
+    showClientToCandidate: false,
     skills: [],
     city: "",
     state: "",
@@ -72,6 +76,52 @@ const PostVacancy = ({url}) => {
     };
   }, [url]); // Only depend on url
 
+  // Fetch clients - only once when component mounts
+  useEffect(() => {
+    // Skip if already fetched
+    if (clientsFetched.current) return;
+
+    let isMounted = true;
+    const abortController = new AbortController();
+
+    const fetchClients = async () => {
+      try {
+        const response = await axios.get(`${url}/api/client/list`, {
+          headers: {
+            'Authorization': `Bearer ${auth.token}`
+          },
+          signal: abortController.signal
+        });
+        if (response.data.success && isMounted) {
+          // Filter only active clients
+          const activeClients = response.data.data.filter(client => client.isActive !== false);
+          setClients(activeClients);
+          clientsFetched.current = true;
+        }
+      } catch (error) {
+        if (axios.isCancel(error) || error.name === 'AbortError') {
+          // Request was cancelled, ignore
+          return;
+        }
+        if (isMounted) {
+          console.error("Error fetching clients:", error);
+          // Only show error if it's not a rate limit (429)
+          if (error.response?.status !== 429) {
+            toast.error("Failed to load clients");
+          }
+        }
+      }
+    };
+    
+    fetchClients();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, [url, auth.token]); // Depend on url and auth.token
+
   const onChangeHandler = (event) => {
     const name = event.target.name;
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -101,6 +151,8 @@ const PostVacancy = ({url}) => {
       description: data.description,
       qualification: data.qualification,
       industry: data.industry || null,
+      client: data.client || null,
+      showClientToCandidate: data.showClientToCandidate,
       skills: data.skills,
       city: data.city,
       state: data.state,
@@ -133,6 +185,8 @@ const PostVacancy = ({url}) => {
           description: "",
           qualification: "",
           industry: "",
+          client: "",
+          showClientToCandidate: false,
           skills: [],
           city: "",
           state: "",
@@ -191,6 +245,39 @@ const PostVacancy = ({url}) => {
             ))}
           </select>
         </div>
+
+        <div className="add-product-name flex-col">
+          <p>Client/Company</p>
+          <select 
+            onChange={onChangeHandler} 
+            value={data.client} 
+            name="client"
+          >
+            <option value="">Select Client (Optional)</option>
+            {clients.map(client => (
+              <option key={client._id} value={client._id}>
+                {client.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {data.client && (
+          <div className="add-product-name flex-col">
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={data.showClientToCandidate}
+                onChange={onChangeHandler}
+                name="showClientToCandidate"
+              />
+              Show Client Name to Candidates
+              <span style={{ fontSize: '12px', color: '#64748b', marginLeft: '8px' }}>
+                (If checked, candidates will see the client/company name)
+              </span>
+            </label>
+          </div>
+        )}
 
         <div className="add-product-name flex-col">
           <p>Description *</p>

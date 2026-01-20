@@ -40,4 +40,5 @@ hr{
   border: 1px solid #ccc;
   background-color: #f9fafb;
   width: 100%;
+  padding-bottom: 20px; /* Extra padding to ensure content at bottom is fully visible */
 }
