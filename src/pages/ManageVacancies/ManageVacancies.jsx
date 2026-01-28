@@ -332,6 +332,16 @@ const ManageVacancies = ({ url }) => {
           </div>
           <div className="card-actions">
             <button
+              className="icon-btn view-btn-applicants"
+              onClick={() => navigate(`/cvs?jobId=${vacancy.jobId}`)}
+              title="View Applicants"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12C13.933 12 15.5 10.433 15.5 8.5C15.5 6.567 13.933 5 12 5C10.067 5 8.5 6.567 8.5 8.5C8.5 10.433 10.067 12 12 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M5 19C5.948 17.343 8.286 15 12 15C15.714 15 18.052 17.343 19 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <button
               className="icon-btn edit-btn"
               onClick={() => navigate(`/edit-vacancy/${vacancy._id}`)}
               title="Edit Vacancy"
@@ -359,6 +369,9 @@ const ManageVacancies = ({ url }) => {
         
         <div className="card-body">
           <div className="card-badges">
+            {vacancy.isPromoted && (
+              <span className="badge promoted-badge">⭐ Promoted</span>
+            )}
             {vacancy.industry && (
               <span className="badge industry-badge">{vacancy.industry.name}</span>
             )}
@@ -453,6 +466,7 @@ const ManageVacancies = ({ url }) => {
               <span className="list-job-id">#{vacancy.jobId}</span>
             </div>
             <div className="list-badges">
+              {vacancy.isPromoted && <span className="badge-small promoted">⭐ Promoted</span>}
               {vacancy.industry && <span className="badge-small">{vacancy.industry.name}</span>}
               {vacancy.client && <span className="badge-small client">🏢 {vacancy.client.name}</span>}
               <span className={`badge-small status-${vacancy.status}`}>{vacancy.status}</span>
@@ -484,6 +498,16 @@ const ManageVacancies = ({ url }) => {
           )}
         </div>
         <div className="list-actions">
+          <button
+            className="icon-btn-small view-btn-applicants"
+            onClick={() => navigate(`/cvs?jobId=${vacancy.jobId}`)}
+            title="View Applicants"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 12C13.933 12 15.5 10.433 15.5 8.5C15.5 6.567 13.933 5 12 5C10.067 5 8.5 6.567 8.5 8.5C8.5 10.433 10.067 12 12 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5 19C5.948 17.343 8.286 15 12 15C15.714 15 18.052 17.343 19 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
           <button
             className="icon-btn-small edit-btn"
             onClick={() => navigate(`/edit-vacancy/${vacancy._id}`)}

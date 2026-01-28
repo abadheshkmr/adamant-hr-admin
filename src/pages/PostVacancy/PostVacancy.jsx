@@ -18,6 +18,8 @@ const PostVacancy = ({url}) => {
     industry: "",
     client: "",
     showClientToCandidate: false,
+    isPromoted: false,
+    displayOrder: 0,
     skills: [],
     city: "",
     state: "",
@@ -153,6 +155,8 @@ const PostVacancy = ({url}) => {
       industry: data.industry || null,
       client: data.client || null,
       showClientToCandidate: data.showClientToCandidate,
+      isPromoted: data.isPromoted,
+      displayOrder: data.displayOrder ? parseInt(data.displayOrder) : 0,
       skills: data.skills,
       city: data.city,
       state: data.state,
@@ -483,6 +487,74 @@ const PostVacancy = ({url}) => {
             <option value="draft">Draft</option>
             <option value="closed">Closed</option>
           </select>
+        </div>
+
+        {/* Promotion Controls */}
+        <div className="add-product-name flex-col" style={{ 
+          background: '#f9fafb', 
+          padding: '16px', 
+          borderRadius: '8px',
+          border: '1px solid #e5e7eb',
+          marginBottom: '20px'
+        }}>
+          <label style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '12px', 
+            cursor: 'pointer',
+            fontWeight: '500',
+            fontSize: '15px',
+            marginBottom: data.isPromoted ? '12px' : '0'
+          }}>
+            <input
+              type="checkbox"
+              checked={data.isPromoted}
+              onChange={onChangeHandler}
+              name="isPromoted"
+              style={{ 
+                width: '20px', 
+                height: '20px', 
+                cursor: 'pointer',
+                accentColor: '#006AB0'
+              }}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>⭐</span>
+                <strong>Promote this job</strong>
+              </span>
+              <span style={{ fontSize: '13px', color: '#6b7280', fontWeight: '400' }}>
+                Show on frontend by default (promoted jobs appear first)
+              </span>
+            </div>
+          </label>
+          
+          {data.isPromoted && (
+            <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e5e7eb' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
+                Display Order (Higher = Shows First)
+              </label>
+              <input
+                type="number"
+                value={data.displayOrder}
+                onChange={onChangeHandler}
+                name="displayOrder"
+                min="0"
+                placeholder="0"
+                style={{
+                  padding: '10px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  width: '100%',
+                  maxWidth: '200px'
+                }}
+              />
+              <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '6px', marginBottom: '0' }}>
+                Jobs with higher display order appear first. Default is 0.
+              </p>
+            </div>
+          )}
         </div>
 
         <button type='submit' className='add-btn'>POST VACANCY</button>
