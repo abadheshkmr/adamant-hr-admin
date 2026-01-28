@@ -401,6 +401,9 @@
   font-size: 13px;
   transition: background 0.2s;
   display: inline-block;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .view-resume-btn:hover {

@@ -343,6 +343,12 @@
   font-weight: 500;
 }
 
+.promoted-badge {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  font-weight: 700;
+}
+
 .industry-badge {
   background: #f3f4f6;
   color: #374151;
@@ -610,6 +616,12 @@
 .badge-small.status-draft {
   background: #fef3c7;
   color: #92400e;
+}
+
+.badge-small.promoted {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  font-weight: 700;
 }
 
 .list-meta {

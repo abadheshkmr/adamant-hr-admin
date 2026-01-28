@@ -3,6 +3,8 @@ import axios from "axios";
 import "./Applicants.css";
 import { toast } from "react-toastify";
 import { AuthContext } from '../../context/AuthContext';
+import { useLocation, useNavigate } from "react-router-dom";
+import ResumeModal from '../../components/ResumeModal/ResumeModal';
 
 /**
  * Redesigned Applicants Page - Takes advantage of normalized structure
@@ -16,11 +18,14 @@ import { AuthContext } from '../../context/AuthContext';
  */
 const Applicants = ({ url }) => {
   const { auth } = useContext(AuthContext);
+  const location = useLocation();
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('applications'); // 'candidates' or 'applications'
   const [applications, setApplications] = useState([]);
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedResume, setSelectedResume] = useState(null); // For resume modal
   const [filter, setFilter] = useState({
     jobId: "",
     status: "",
@@ -43,6 +48,7 @@ const Applicants = ({ url }) => {
   });
   const [vacancies, setVacancies] = useState([]);
   const [jobMap, setJobMap] = useState({});
+  const [focusedJobId, setFocusedJobId] = useState(null); // JobId coming from /cvs?jobId=XXX
   const [stats, setStats] = useState({
     totalCandidates: 0,
     totalApplications: 0,
@@ -69,6 +75,21 @@ const Applicants = ({ url }) => {
       // Don't show error toast for public endpoint failures
     }
   };
+
+  // Initialize filters from URL (e.g. /cvs?jobId=123)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const jobIdFromUrl = params.get('jobId');
+    if (jobIdFromUrl) {
+      setFilter(prev => ({
+        ...prev,
+        jobId: jobIdFromUrl
+      }));
+      setFocusedJobId(jobIdFromUrl);
+      setViewMode('applications');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   // Fetch all applications
   const fetchApplications = async () => {
@@ -298,6 +319,8 @@ const Applicants = ({ url }) => {
       sortBy: viewMode === 'applications' ? "appliedAt" : "createdAt",
       sortOrder: "desc"
     });
+    setFocusedJobId(null);
+    navigate('/cvs');
   };
 
   // Reset to page 1 when filters or view mode change
@@ -382,14 +405,22 @@ const Applicants = ({ url }) => {
                   </select>
                 </div>
                 {app.resume?.url && (
-                  <a
-                    href={`${url}/${app.resume.url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => {
+                      const candidate = selectedCandidate.candidate;
+                      const candidateName = `${candidate.firstName} ${candidate.lastName}`;
+                      const jobTitle = jobMap[app.jobId] || `Job #${app.jobId}`;
+                      setSelectedResume({
+                        url: app.resume.url,
+                        candidateName,
+                        jobTitle
+                      });
+                      document.body.classList.add('modal-open');
+                    }}
                     className="view-resume-btn"
                   >
-                    View Resume
-                  </a>
+                    📄 View Resume
+                  </button>
                 )}
                 <button
                   className="delete-btn-small"
@@ -409,7 +440,15 @@ const Applicants = ({ url }) => {
   return (
     <div className="applicants-page scrollable-div">
       <div className="page-header">
-        <h2>Recruitment Management</h2>
+        <div>
+          <h2>Recruitment Management</h2>
+          {focusedJobId && (
+            <p style={{ marginTop: '4px', fontSize: '14px', color: '#64748b' }}>
+              Viewing applications for job <strong>#{focusedJobId}</strong>
+              {jobMap[focusedJobId] && <> – <strong>{jobMap[focusedJobId]}</strong></>}
+            </p>
+          )}
+        </div>
         <div className="view-toggle">
           <button
             className={`toggle-btn ${viewMode === 'candidates' ? 'active' : ''}`}
@@ -714,14 +753,24 @@ const Applicants = ({ url }) => {
                     </div>
                     <div className="app-card-actions">
                       {application.resume?.url ? (
-                        <a
-                          href={`${url}/${application.resume.url}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button
+                          onClick={() => {
+                            const candidate = application.candidateId || application;
+                            const candidateName = candidate.firstName && candidate.lastName 
+                              ? `${candidate.firstName} ${candidate.lastName}` 
+                              : candidate.firstName || candidate.lastName || "N/A";
+                            const jobTitle = jobMap[application.jobId] || `Job #${application.jobId}`;
+                            setSelectedResume({
+                              url: application.resume.url,
+                              candidateName,
+                              jobTitle
+                            });
+                            document.body.classList.add('modal-open');
+                          }}
                           className="view-resume-btn"
                         >
-                          View Resume
-                        </a>
+                          📄 View Resume
+                        </button>
                       ) : (
                         <span className="no-resume">No Resume</span>
                       )}
@@ -768,6 +817,20 @@ const Applicants = ({ url }) => {
             </div>
           )}
         </>
+      )}
+
+      {/* Resume Modal */}
+      {selectedResume && (
+        <ResumeModal
+          resumeUrl={selectedResume.url}
+          candidateName={selectedResume.candidateName}
+          jobTitle={selectedResume.jobTitle}
+          url={url}
+          onClose={() => {
+            setSelectedResume(null);
+            document.body.classList.remove('modal-open');
+          }}
+        />
       )}
     </div>
   );
