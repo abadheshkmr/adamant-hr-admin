@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./ListServices.css";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from '../../context/AuthContext';
 
 const ListServices = ({ url }) => {
+  const { auth } = useContext(AuthContext);
   const [expandedDesc, setExpandedDesc] = useState({});
   const [services, setServices] = useState([]);
 
@@ -33,7 +35,11 @@ const ListServices = ({ url }) => {
 
   const handleDelete = async(id) => {
     try{
-    const response = await axios.post(`${url}/api/service/remove`, { id });
+    const response = await axios.post(`${url}/api/service/remove`, { id }, {
+      headers: {
+        'Authorization': `Bearer ${auth.token}`
+      }
+    });
     if(response.data.success) {
         toast.success("service deleted successfully");
         fetchlist(); // Refresh the list after deletion

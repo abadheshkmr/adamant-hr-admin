@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import './AddService.css'
 import axios from "axios";
 import { toast } from 'react-toastify';
+import { AuthContext } from '../../context/AuthContext';
 
 
 const AddService = ({url}) => {
-
+  const { auth } = useContext(AuthContext);
   const [image , setImage] = useState(false);
   const [data , setData] = useState({
     name:"",
@@ -28,7 +29,11 @@ const AddService = ({url}) => {
     // formData.append("price" , Number(data.price));
     // formData.append("category" , data.category);
     formData.append("image",image);
-    const response = await axios.post(`${url}/api/service/add` , formData);
+    const response = await axios.post(`${url}/api/service/add` , formData, {
+      headers: {
+        'Authorization': `Bearer ${auth.token}`
+      }
+    });
     if(response.data.success){
       setData({
         name:"",

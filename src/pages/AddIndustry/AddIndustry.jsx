@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import './AddIndustry.css'
 import axios from "axios";
 import { toast } from 'react-toastify';
+import { AuthContext } from '../../context/AuthContext';
 
 const AddIndustry = ({url}) => {
-
+  const { auth } = useContext(AuthContext);
   const [image , setImage] = useState(false);
   const [data , setData] = useState({
     name:"",
@@ -43,7 +44,11 @@ const AddIndustry = ({url}) => {
 }
     
     
-    const response = await axios.post(`${url}/api/industry/add` , formData);
+    const response = await axios.post(`${url}/api/industry/add` , formData, {
+      headers: {
+        'Authorization': `Bearer ${auth.token}`
+      }
+    });
     if(response.data.success){
       setData({
         name:"",

@@ -1,10 +1,12 @@
-import React, { useState , useEffect } from "react";
+import React, { useState , useEffect, useContext } from "react";
 import "./ListIndustries.css";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from '../../context/AuthContext';
 
 const ListIndustries = ({url}) => {
+  const { auth } = useContext(AuthContext);
   const [expandedDesc, setExpandedDesc] = useState({});
   const [expandedRoles, setExpandedRoles] = useState({});
   const [industries,setIndustries] = useState([]);
@@ -37,7 +39,11 @@ const ListIndustries = ({url}) => {
 
   const handleDelete = async(id) => {
     try{
-    const response = await axios.post(`${url}/api/industry/remove`, { id });
+    const response = await axios.post(`${url}/api/industry/remove`, { id }, {
+      headers: {
+        'Authorization': `Bearer ${auth.token}`
+      }
+    });
     if(response.data.success) {
         toast.success("Industry deleted successfully");
         fetchlist(); // Refresh the list after deletion
